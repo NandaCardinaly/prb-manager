@@ -391,13 +391,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>🍅 Pomodoro PRB Tracker</h1>
+        <h1> PRB Tracker</h1>
         <p class="subtitle">Gerencie seus PRBs com eficiência usando a técnica Pomodoro</p>
         
         <div class="main-content">
             <div class="section">
                 <h2>➕ Adicionar PRB</h2>
-                <form class="add-prb-form" onsubmit="addPRB(event)">
+                <form class="add-prb-form" onsubmit="return addPRB(event)">
                     <div class="form-group">
                         <label for="prbName">Nome do PRB *</label>
                         <input type="text" id="prbName" required placeholder="Ex: Implementar API de usuários">
@@ -471,8 +471,12 @@
         // Carregar dados do localStorage
         function loadData() {
             const saved = localStorage.getItem('prbTrackerData');
+            console.log('Carregando dados do localStorage:', saved);
             if (saved) {
                 prbs = JSON.parse(saved);
+                console.log('PRBs carregados:', prbs.length);
+            } else {
+                console.log('Nenhum dado salvo encontrado');
             }
             renderPRBs();
             updateSummary();
@@ -480,7 +484,10 @@
 
         // Salvar dados no localStorage
         function saveData() {
+            console.log('Salvando PRBs no localStorage:', prbs);
             localStorage.setItem('prbTrackerData', JSON.stringify(prbs));
+            const verification = localStorage.getItem('prbTrackerData');
+            console.log('Verificação após salvar:', verification);
             updateSummary();
         }
 
@@ -492,9 +499,11 @@
             const description = document.getElementById('prbDescription').value.trim();
             const estimatedHours = parseFloat(document.getElementById('prbEstimatedHours').value);
 
+            console.log('Adicionando PRB:', { name, description, estimatedHours });
+
             if (!name || !estimatedHours || estimatedHours <= 0) {
                 alert('Por favor, preencha o nome e horas estimadas válidas!');
-                return;
+                return false;
             }
 
             const prb = {
@@ -509,6 +518,9 @@
             };
 
             prbs.push(prb);
+            console.log('PRB adicionado. Total de PRBs:', prbs.length);
+            console.log('Array de PRBs:', prbs);
+            
             saveData();
             renderPRBs();
 
@@ -516,11 +528,17 @@
             document.getElementById('prbName').value = '';
             document.getElementById('prbDescription').value = '';
             document.getElementById('prbEstimatedHours').value = '';
+            
+            console.log('Formulário limpo e PRB renderizado');
+            
+            return false;
         }
 
         // Renderizar lista de PRBs
         function renderPRBs() {
             const listEl = document.getElementById('prbList');
+            
+            console.log('Renderizando PRBs. Total:', prbs.length);
             
             if (prbs.length === 0) {
                 listEl.innerHTML = `
